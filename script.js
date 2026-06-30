@@ -1,6 +1,5 @@
-// ==================== SUPABASE ====================
 const supabaseUrl = 'https://xtvqfcjezjsqj.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoYXZmZXVkeHR2cWZjZWp6c3FqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0Mzc2NDcsImV4cCI6MjA5NzAxMzY0N30._UJ4ThTtQUzjY1bMwdFFTRIwGhaZTqNOh__1mzzw1hw'; // ← ВСТАВЬ СВОЙ КЛЮЧ!
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoYXZmZXVkeHR2cWZjZWp6c3FqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0Mzc2NDcsImV4cCI6MjA5NzAxMzY0N30._UJ4ThTtQUzjY1bMwdFFTRIwGhaZTqNOh__1mzzw1hw';
 
 const supabase = Supabase.createClient(supabaseUrl, supabaseAnonKey);
 
@@ -150,7 +149,7 @@ function renderCabinet() {
           <datalist id="list"></datalist>
           <div style="position:relative;margin-bottom:18px;">
             <input type="password" id="regPassword" class="auth-input" placeholder="Пароль" required style="padding-right:48px;">
-            <button type="button" onclick="togglePasswordVisibility('regPassword', this)" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:#888;font-size:1.3rem;cursor:pointer;">👁️</button>
+            <button type="button" onclick="togglePasswordVisibility('regPassword', this)" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:#888;font-size:1.3rem;cursor:pointer;">Show</button>
           </div>
           <button type="submit" class="auth-btn">Войти / Зарегистрироваться</button>
         </form>
@@ -184,7 +183,7 @@ function logoutUser() {
 function togglePasswordVisibility(id, btn) {
   const i = document.getElementById(id);
   i.type = i.type === 'password' ? 'text' : 'password';
-  btn.textContent = i.type === 'password' ? '👁️' : '🙈';
+  btn.textContent = i.type === 'password' ? 'Show' : 'Hide';
 }
 
 function initTabs() {
