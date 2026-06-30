@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Клан [KIL_6] • 2.0</title>
+  <style>
+    :root {
+      --primary: #00ff88;
+      --primary-dark: #00cc66;
+      --dark: #0a0a0f;
+      --glass-bg: rgba(26, 26, 31, 0.68);
+      --glass-border: rgba(255, 255, 255, 0.09);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0a0a0f 0%, #12121a 100%);
+      color: #eee;
+      min-height: 100vh;
+    }
+    header {
+      background: rgba(10, 10, 15, 0.94);
+      padding: 1rem 0;
+      border-bottom: 3px solid var(--primary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(22px);
+    }
+    .nav {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      gap: 2.6rem;
+      flex-wrap: wrap;
+      padding: 0 1rem;
+    }
+    .tab {
+      padding: 16px 0;
+      background: transparent;
+      border: none;
+      color: #888;
+      font-size: 1.15rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.35s;
+      position: relative;
+    }
+    .tab.active {
+      color: var(--primary);
+      text-shadow: 0 0 14px rgba(0, 255, 136, 0.65);
+    }
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 100%;
+      height: 3.5px;
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      box-shadow: 0 0 18px var(--primary);
+    }
+    .container {
+      max-width: 1280px;
+      margin: 2.2rem auto;
+      padding: 0 1.2rem;
+    }
+    .content {
+      display: none;
+      animation: fadeInUp 0.75s forwards;
+    }
+    .content.active {
+      display: block;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(45px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(22px);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+    }
+    .season-banner {
+      width: 100%;
+      max-width: 1150px;
+      margin: 1.8rem auto;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+      border: 2.5px solid var(--primary);
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(305px, 1fr));
+      gap: 2.1rem;
+    }
+    .card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: all 0.45s;
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: translateY(-14px);
+      box-shadow: 0 28px 55px rgba(0, 255, 136, 0.18);
+      border-color: var(--primary);
+    }
+    .card img {
+      width: 100%;
+      height: 185px;
+      object-fit: cover;
+      background: #111;
+    }
+    .card-body {
+      padding: 1.55rem;
+      text-align: center;
+    }
+    .medals-container {
+      display: flex;
+      gap: 7px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 12px 0 6px;
+    }
+    .medal {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 23px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s;
+      border: 2.5px solid;
+      background: rgba(0,0,0,0.45);
+      box-shadow: 0 0 16px currentColor;
+    }
+    .medal:hover {
+      transform: scale(1.28);
+      z-index: 10;
+    }
+    .medal.rare { border-color: #00ccff; box-shadow: 0 0 20px #00ccff; }
+    .medal.mythic { border-color: #ff4444; box-shadow: 0 0 20px #ff4444; }
+    .medal.legendary { border-color: #ffd700; box-shadow: 0 0 22px #ffd700; }
+    .medal .tooltip {
+      visibility: hidden;
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15,15,15,0.96);
+      border: 2px solid var(--primary);
+      padding: 13px 17px;
+      border-radius: 11px;
+      width: 245px;
+      z-index: 30;
+      font-size: 0.91rem;
+      text-align: center;
+      opacity: 0;
+      transition: all 0.28s;
+      pointer-events: none;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.75);
+    }
+    .medal:hover .tooltip { visibility: visible; opacity: 1; }
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: var(--glass-bg);
+      backdrop-filter: blur(26px);
+      width: 92%;
+      max-width: 620px;
+      border-radius: 22px;
+      border: 3px solid var(--primary);
+      overflow: hidden;
+      box-shadow: 0 35px 80px rgba(0, 255, 136, 0.22);
+    }
+    .modal-header {
+      padding: 1.85rem;
+      background: linear-gradient(90deg, rgba(26,26,31,0.92), rgba(34,34,42,0.92));
+      text-align: center;
+      border-bottom: 2.5px solid var(--primary);
+    }
+    .modal-body {
+      padding: 2.1rem;
+    }
+    .filters {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      padding: 11px 17px;
+      background: #111;
+      border: 2px solid #333;
+      border-radius: 9px;
+      color: white;
+      width: 260px;
+      transition: all 0.3s;
+    }
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 14px rgba(0,255,136,0.25);
+      outline: none;
+    }
+    select {
+      padding: 10px 15px;
+      background: #111;
+      border: 2px solid #333;
+      border-radius: 9px;
+      color: white;
+    }
+    .kpd-circle {
+      width: 132px;
+      height: 132px;
+      margin: 16px auto;
+      position: relative;
+    }
+    .kpd-circle svg { transform: rotate(-90deg); }
+    .kpd-circle .background {
+      fill: none;
+      stroke: #333;
+      stroke-width: 15;
+    }
+    .kpd-circle .progress {
+      fill: none;
+      stroke-width: 15;
+      stroke-linecap: round;
+      stroke-dasharray: 385;
+      stroke-dashoffset: 385;
+      animation: progressAnimation 2.1s ease forwards;
+      filter: drop-shadow(0 0 9px currentColor);
+    }
+    @keyframes progressAnimation {
+      to { stroke-dashoffset: var(--final-offset); }
+    }
+    .kpd-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.45rem;
+      font-weight: 700;
+    }
+    .clan-progress {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 3px solid var(--primary);
+      border-radius: 22px;
+      padding: 2.15rem;
+      margin-bottom: 2.6rem;
+      text-align: center;
+    }
+    .big-progress-bar {
+      height: 29px;
+      background: #222;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 16px 0;
+      border: 2px solid #333;
+    }
+    .big-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00ff88, #00cc66);
+      border-radius: 999px;
+      transition: width 2.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 0 24px var(--primary);
+    }
+    .mission {
+      background: var(--glass-bg);
+      backdrop-filter: blur(17px);
+      border-radius: 15px;
+      padding: 1.45rem 1.6rem;
+      margin-bottom: 1.25rem;
+      border-left: 6px solid var(--primary);
+      transition: all 0.35s;
+    }
+    .mission:hover {
+      transform: translateX(9px);
+    }
+    .timer {
+      color: #ff4444;
+      font-weight: 700;
+      text-align: center;
+      font-size: 1.5rem;
+      margin: 1.6rem 0 2.6rem;
+      text-shadow: 0 0 12px rgba(255, 68, 68, 0.55);
+    }
+    .stats-main {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.8rem;
+      max-width: 1100px;
+      margin: 2rem auto;
+    }
+    .stat-card {
+      background: #111;
+      border-radius: 16px;
+      padding: 2rem 1.8rem;
+      text-align: center;
+      border: 3px solid;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+      transition: all 0.3s;
+    }
+    .stat-card:hover {
+      transform: translateY(-8px);
+    }
+    .stat-card.x { border-color: #00ff88; box-shadow: 0 0 25px rgba(0, 255, 136, 0.3); }
+    .stat-card.viii { border-color: #ffd700; box-shadow: 0 0 25px rgba(255, 215, 0, 0.3); }
+    .stat-card.vi { border-color: #00ccff; box-shadow: 0 0 25px rgba(0, 204, 255, 0.3); }
+    .stat-card h3 {
+      color: #ffffff;
+      margin-bottom: 1rem;
+      font-size: 1.35rem;
+      font-weight: 600;
+    }
+    .stat-number {
+      font-size: 4.2rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .stat-card.x .stat-number { color: #00ff88; text-shadow: 0 0 15px #00ff88, 0 0 30px #00ff88; }
+    .stat-card.viii .stat-number { color: #ffd700; text-shadow: 0 0 15px #ffd700, 0 0 30px #ffd700; }
+    .stat-card.vi .stat-number { color: #00ccff; text-shadow: 0 0 15px #00ccff, 0 0 30px #00ccff; }
+    .buildings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(275px, 1fr));
+      gap: 1.25rem;
+      max-width: 1120px;
+      margin: 3.2rem auto 2.2rem;
+    }
+    .building-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(17px);
+      padding: 1.5rem;
+      border-radius: 15px;
+      text-align: center;
+      border: 2px solid #222;
+      transition: all 0.35s;
+    }
+    .building-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-6px);
+    }
+    .tab-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .loader-spinner {
+      width: 70px;
+      height: 70px;
+      border: 5px solid rgba(0, 255, 136, 0.2);
+      border-top: 5px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .loader-text {
+      color: var(--primary);
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-shadow: 0 0 10px var(--primary);
+    }
+    .compare-result {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2.2rem;
+    }
+    .compare-player-card {
+      background: #0f0f14;
+      border-radius: 18px;
+      padding: 2.4rem 1.8rem;
+      text-align: center;
+      border: 3px solid #222;
+      transition: all 0.4s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .compare-player-card.winner {
+      border-color: #00ff88;
+      box-shadow: 0 0 35px rgba(0, 255, 136, 0.35);
+    }
+    .compare-player-name {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 1.4rem;
+    }
+    .compare-kpd {
+      font-size: 5rem;
+      font-weight: 800;
+      line-height: 1;
+      margin: 1rem 0 0.6rem;
+    }
+    .compare-label {
+      color: #888;
+      font-size: 1.1rem;
+      margin-bottom: 0.8rem;
+    }
+    .compare-role {
+      color: #aaa;
+      font-size: 1.1rem;
+      margin-top: 0.6rem;
+    }
+    .auth-form {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .auth-input {
+      width: 100%;
+      padding: 14px 18px;
+      background: #111;
+      border: 2px solid #333;
+      border-radius: 12px;
+      color: white;
+      font-size: 1.05rem;
+      margin-bottom: 14px;
+      transition: all 0.3s;
+    }
+    .auth-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 18px rgba(0,255,136,0.3);
+      outline: none;
+    }
+    .auth-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(90deg, #00ff88, #00cc66);
+      color: black;
+      border: none;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 0 25px rgba(0,255,136,0.5);
+    }
+    .auth-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px rgba(0,255,136,0.7);
+    }
+    .nickname-status {
+      font-size: 0.95rem;
+      margin: -8px 0 14px;
+      min-height: 22px;
+      font-weight: 600;
+    }
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111;
+      border: 2px solid var(--primary);
+      color: white;
+      padding: 14px 28px;
+      border-radius: 14px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      z-index: 2000;
+      display: none;
+      font-weight: 600;
+    }
+    .toast.success { border-color: #00ff88; color: #00ff88; }
+    .toast.error { border-color: #ff4444; color: #ff4444; }
+    .profile-stat {
+      background: #111;
+      border-radius: 14px;
+      padding: 1.1rem;
+      text-align: center;
+      border: 2px solid #222;
+    }
+    .avatar-upload {
+      text-align: center;
+      margin: 1.5rem 0;
+    }
+    .avatar-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 4px solid var(--primary);
+      object-fit: cover;
+      margin: 0 auto 12px;
+      display: block;
+      box-shadow: 0 0 20px rgba(0,255,136,0.3);
+    }
+    .avatar-placeholder {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: #222;
+      border: 4px dashed #555;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    footer {
+      text-align: center;
+      padding: 2.5rem 1rem 1.5rem;
+      color: #666;
+      font-size: 0.9rem;
+      border-top: 1px solid #222;
+      margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- АНИМИРОВАННАЯ ЗАГРУЗКА -->
+  <div id="tabLoader" class="tab-loader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">Загрузка...</div>
+  </div>
+
+  <header>
+    <nav class="nav">
+      <button class="tab active" data-tab="home">Главная</button>
+      <button class="tab" data-tab="members">Состав</button>
+      <button class="tab" data-tab="progress">Прогрессия</button>
+      <button class="tab" data-tab="stats">Статистика</button>
+      <button class="tab" data-tab="rules">Правила</button>
+      <button class="tab" data-tab="cabinet">Кабинет</button>
+    </nav>
+  </header>
+
+  <div class="container">
+    <!-- Главная -->
+    <div id="home" class="content active">
+      <h1 style="text-align:center; margin: 2.1rem 0 1.1rem; font-size: 3.15rem; text-shadow: 0 0 22px rgba(0,255,136,0.55);">
+        <span style="color:var(--primary)">[KIL_6] THE SHIELD • 2.0</span>
+      </h1>
+      <img src="images/natisk-special.png"
+           alt="Натиск Специальный Выпуск"
+           class="season-banner"
+           style="max-height: 440px; object-fit: cover;"
+           onerror="this.src='https://via.placeholder.com/1150x440/0a0a0f/00ff88?text=НАТИСК+СПЕЦИАЛЬНЫЙ+ВЫПУСК';">
+      
+      <div style="text-align:center; margin: 1.4rem 0 2.3rem; color:#aaa; font-size:1.15rem;">
+        <strong style="color:#00ff88;"></strong><br>
+        
+      </div>
+    </div>
+
+    <!-- Состав -->
+    <div id="members" class="content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.6rem; flex-wrap: wrap; gap: 16px;">
+        <h2>Состав клана</h2>
+      
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <button onclick="openCompareModal()"
+                  style="background: #111; border: 2.5px solid var(--primary); color: var(--primary); padding: 11px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 0.95rem;">
+             Сравнить игроков
+          </button>
+        
+          <div class="filters">
+            <input type="text" id="searchInput" class="search-input" placeholder="Поиск по нику...">
+            <select id="sortSelect">
+              <option value="default">Сортировка</option>
+              <option value="name-asc">По алфавиту (А-Я)</option>
+              <option value="name-desc">По алфавиту (Я-А)</option>
+              <option value="kpd-desc">КПД ↓</option>
+              <option value="kpd-asc">КПД ↑</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    
+      <div class="cards" id="membersCards"></div>
+    </div>
+
+    <!-- Прогрессия -->
+    <div id="progress" class="content">
+      <h2 style="text-align:center; margin-bottom:0.6rem;">Клановая Прогрессия</h2>
+      <div class="timer" id="countdown">Загрузка...</div>
+    
+      <div class="clan-progress glass">
+        <div style="font-weight:600; margin-bottom:9px;">ПРОГРЕСС КЛАНА ЗА НЕДЕЛЮ</div>
+        <div class="big-progress-bar">
+          <div class="big-progress-fill" style="width:0%"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:1.12rem;">
+          <span>Очки прогрессии: <strong>0 / 10000</strong></span>
+          <span><strong>0%</strong></span>
+        </div>
+      </div>
+
+      <div class="mission glass">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div><strong>Победы в Вылозки 6/8/10</strong></div>
+          <div>0 / 70</div>
+        </div>
+        <div class="big-progress-bar" style="height:18px;"><div class="big-progress-fill" style="width:0%"></div></div>
+        <div style="display:flex; justify-content:space-between; font-size:0.95rem; color:#aaa;">
+          <span>Награда: +2000 очков</span><span>0%</span>
+        </div>
+      </div>
+      <div class="mission glass">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div><strong>Нанести 1 500 000 урона</strong></div>
+          <div>0 / 1 500 000</div>
+        </div>
+        <div class="big-progress-bar" style="height:18px;"><div class="big-progress-fill" style="width:0%"></div></div>
+        <div style="display:flex; justify-content:space-between; font-size:0.95rem; color:#aaa;">
+          <span>Награда: +1500 очков</span><span>0%</span>
+        </div>
+      </div>
+      <div class="mission glass">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div><strong>Уничтожить 800 танков</strong></div>
+          <div>0 / 800</div>
+        </div>
+        <div class="big-progress-bar" style="height:18px;"><div class="big-progress-fill" style="width:0%"></div></div>
+        <div style="display:flex; justify-content:space-between; font-size:0.95rem; color:#aaa;">
+          <span>Награда: +1200 очков</span><span>0%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Статистика -->
+    <div id="stats" class="content">
+      <h2 style="margin-bottom:1.6rem; text-align:center;">Статистика клана</h2>
+      <img src="images/stats-map.png" alt="Карта базы" class="stats-map"
+           style="width:100%; max-width:1120px; border-radius:18px; border:2px solid #222;"
+           onerror="this.src='https://via.placeholder.com/1120x620/111827/00ff88?text=Карта+Базы+Клана';">
+    
+      <div class="stats-main">
+        <div class="stat-card x glass">
+          <h3>Уровень X</h3>
+          <div class="stat-number" data-target="1122" style="color:#00ff88; text-shadow: 0 0 15px #00ff88, 0 0 30px #00ff88;">0</div>
+        </div>
+        <div class="stat-card viii glass">
+          <h3>Уровень VIII</h3>
+          <div class="stat-number" data-target="1209" style="color:#ffd700; text-shadow: 0 0 15px #ffd700, 0 0 30px #ffd700;">0</div>
+        </div>
+        <div class="stat-card vi glass">
+          <h3>Уровень VI</h3>
+          <div class="stat-number" data-target="1161" style="color:#00ccff; text-shadow: 0 0 15px #00ccff, 0 0 30px #00ccff;">0</div>
+        </div>
+      </div>
+
+      <h3 style="text-align:center; margin:2.6rem 0 1.6rem; color:var(--primary);">Здания базы</h3>
+      <div class="buildings-grid">
+        <div class="building-card glass"><strong>Командный центр</strong><br><span style="color:#00ff88;">Уровень X</span></div>
+        <div class="building-card glass"><strong>Гараж</strong><br><span style="color:#ffd700;">Уровень X</span></div>
+        <div class="building-card glass"><strong>Склад</strong><br><span style="color:#00ccff;">Уровень IX</span></div>
+        <div class="building-card glass"><strong>Казарма</strong><br><span style="color:#00ff88;">Уровень X</span></div>
+        <div class="building-card glass"><strong>Исследовательский центр</strong><br><span style="color:#ffd700;">Уровень VIII</span></div>
+        <div class="building-card glass"><strong>Тренировочный полигон</strong><br><span style="color:#00ccff;">Уровень IX</span></div>
+        <div class="building-card glass"><strong>Оружейная</strong><br><span style="color:#00ff88;">Уровень X</span></div>
+        <div class="building-card glass"><strong>Радиостанция</strong><br><span style="color:#ffd700;">Уровень VIII</span></div>
+        <div class="building-card glass"><strong>Медицинский пункт</strong><br><span style="color:#00ccff;">Уровень IX</span></div>
+      </div>
+    </div>
+
+    <!-- Правила -->
+    <div id="rules" class="content">
+      <h2 style="margin-bottom:2.1rem; text-align:center;">Правила клана</h2>
+      <div class="glass" style="background: var(--glass-bg); backdrop-filter: blur(20px); padding: 2.3rem; border-radius: 18px; border: 2.5px solid var(--primary); max-width: 1020px; margin: 0 auto;">
+        <h2 style="text-align:center; margin-bottom:2.1rem; color:#00ff88;">Требуются бойцы под АБС формат</h2>
+        <p style="margin-bottom:1.55rem;">1. От 5к боёв — минимум 7 актуальных топов</p>
+        <p style="margin-bottom:1.55rem;">2. Общий процент — 50%+</p>
+        <p style="margin-bottom:1.55rem;">3. Обязательные танки: CS-63, ЧИФ, Concept No.5, ИС-7, ЕБР, КС-43, ОРSO 60ТП, FV215b, T57X3ВИ, ВЗ 111 А5, Об.260, Об.278, т110е5, ТАЙП 5 ХЕВИ, ТЭТ100, МЕРКАВА, 100ЛТ, МАНТИКОР, Е3, МИНОТАВР</p>
+        <p style="margin-bottom:1.55rem;">4. Активность в ИВЕНТЫ / ГК / АБС / ЧЕМПИОНКА</p>
+        <p style="margin-bottom:1.55rem;">5. DMG боёв не ниже 2000</p>
+        <p style="margin-bottom:1.55rem;">6. WN8 от 1800</p>
+        <p style="margin-bottom:1.55rem;">7. Teamspeak обязателен</p>
+        <p style="margin-bottom:1.55rem;">8. Адекватность и целеустремлённость</p>
+        <p style="margin-top:1.5rem; color:#00ff88; font-weight:600;">После вступления обязательно зарегистрируйся в Кабинете сайта!</p>
+      </div>
+    </div>
+
+    <!-- КАБИНЕТ / РЕГИСТРАЦИЯ -->
+    <div id="cabinet" class="content">
+      <h2 style="text-align:center; margin-bottom:1.8rem; color:var(--primary);">Личный кабинет игрока</h2>
+      <div id="cabinetContent" style="max-width:820px; margin:0 auto;"></div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО ИГРОКА -->
+  <div id="playerModal" class="modal">
+    <div class="modal-content glass">
+      <span onclick="closeModal()" style="position:absolute; top:18px; right:24px; font-size:2.3rem; cursor:pointer; color:#888;">×</span>
+      <div class="modal-header" id="modalHeader"></div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- ПРЕМИУМ СРАВНЕНИЕ -->
+  <div id="compareModal" class="modal">
+    <div class="modal-content glass" style="max-width: 950px; border: 3px solid var(--primary);">
+      <span onclick="closeCompareModal()" style="position:absolute; top:18px; right:24px; font-size:2.3rem; cursor:pointer; color:#888;">×</span>
+      <div class="modal-header">
+        <h2 style="color:#00ff88; margin:0;">Сравнение игроков</h2>
+      </div>
+      <div class="modal-body">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; margin-bottom: 1.8rem;">
+          <div>
+            <label style="display:block; margin-bottom:8px; color:#aaa; font-weight:600;">Игрок 1</label>
+            <select id="player1Select" style="width:100%; padding:13px; background:#111; border:2px solid #333; color:white; border-radius:10px;"></select>
+          </div>
+          <div>
+            <label style="display:block; margin-bottom:8px; color:#aaa; font-weight:600;">Игрок 2</label>
+            <select id="player2Select" style="width:100%; padding:13px; background:#111; border:2px solid #333; color:white; border-radius:10px;"></select>
+          </div>
+        </div>
+        <button onclick="comparePlayers()" style="width:100%; padding:16px; background:#00ff88; color:black; border:none; border-radius:12px; font-weight:800; font-size:1.2rem; cursor:pointer; box-shadow: 0 0 25px rgba(0,255,136,0.5);">Сравнить</button>
+        <div id="compareResult" style="margin-top: 2.4rem; display: none;">
+          <div class="compare-result" id="compareContainer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Тосты -->
+  <div id="toast" class="toast"></div>
+
+  <footer>
+    © 2026 Клан [KIL_6] THE SHIELD • Все права защищены • 2026
+  </footer>
+
+  <script>
+    // ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
+    const loader = document.getElementById('tabLoader');
+    let currentUser = null;
+    let clanAccounts = {};
+    let avatars = {};
+    let currentFilteredMembers = [];
+
+    const members = [
+      { name: "evgecshok", kpd: 10.0, role: "Лидер", img: "images/player1.jpg", medals: [{icon:"", name:"Медаль спринта", desc:"Выдана за участие СПРИНТ", rarity:"rare"}] },
+      { name: "surprizZze", kpd: 10.0, role: "Активный игрок", img: "images/player3.jpg", medals: [{icon:"", name:"Медаль спринта", desc:"Выдана за участие СПРИНТ", rarity:"rare"}] },
+      { name: "flamesmurf_TW", kpd: 10.0, role: "Активный игрок", img: "images/player43.jpg", medals: [{icon:"", name:"Медаль спринта", desc:"Выдана за участие СПРИНТ", rarity:"rare"}] },
+      { name: "___BAD__B0Y___", kpd: 10.0, role: "Активный игрок", img: "images/player45.jpg", medals: [{icon:"", name:"Медаль спринта", desc:"Выдана за участие СПРИНТ", rarity:"rare"}] },
+      { name: "HE_IIpoJIUL", kpd: 7.9, role: "Активный игрок", img: "images/player3.jpg", medals: [{icon:"", name:"Балтика", desc:"Он такой еденственный", rarity:"legendary"}, {icon:"", name:"Медаль спринта", desc:"Выдана за участие СПРИНТ", rarity:"rare"}] },
+      { name: "oxana2009", kpd: 1.0, role: "Активный игрок", img: "images/player4.jpg", medals: [] },
+      { name: "Byaka2311", kpd: 3.0, role: "Активный игрок", img: "images/player5.jpg", medals: [] },
+      { name: "CaMyPau_PA", kpd: 2.5, role: "Активный игрок", img: "images/player6.jpg", medals: [] },
+      { name: "egorka_544mcotg", kpd: 3.5, role: "Активный игрок", img: "images/player7.jpg", medals: [] },
+      { name: "FruKTIc_", kpd: 3.2, role: "Активный игрок", img: "images/player8.jpg", medals: [] },
+      { name: "KOrbenDallass", kpd: 1.0, role: "Активный игрок", img: "images/player9.jpg", medals: [] },
+      { name: "kiruxa3473", kpd: 5.6, role: "Активный игрок", img: "images/player10.jpg", medals: [] },
+      { name: "LeBwa_58_rus", kpd: 1.2, role: "Активный игрок", img: "images/player11.jpg", medals: [] },
+      { name: "Liquidatop_", kpd: 1.0, role: "Активный игрок", img: "images/player12.jpg", medals: [] },
+      { name: "New_Goal", kpd: 8.5, role: "Активный игрок", img: "images/player13.jpg", medals: [] },
+      { name: "sacha_1986", kpd: 1.0, role: "Активный игрок", img: "images/player14.jpg", medals: [] },
+      { name: "SUPER_RAK", kpd: 4.6, role: "Активный игрок", img: "images/player15.jpg", medals: [] },
+      { name: "TauruS_716", kpd: 1.0, role: "Активный игрок", img: "images/player16.jpg", medals: [] },
+      { name: "TSUNXM1", kpd: 1.0, role: "Активный игрок", img: "images/player17.jpg", medals: [] },
+      { name: "Vitek_7777", kpd: 3.2, role: "Активный игрок", img: "images/player18.jpg", medals: [] },
+      { name: "Wolfsburg__I_LI", kpd: 1.0, role: "Активный игрок", img: "images/player19.jpg", medals: [] },
+      { name: "BaHDuT_c_ALTaYa_", kpd: 1.0, role: "Активный игрок", img: "images/player20.jpg", medals: [] },
+      { name: "3PX", kpd: 1.0, role: "Активный игрок", img: "images/player21.jpg", medals: [] },
+      { name: "Bentusi", kpd: 1.0, role: "Активный игрок", img: "images/player22.jpg", medals: [] },
+      { name: "Fapyta", kpd: 1.0, role: "Активный игрок", img: "images/player23.jpg", medals: [] },
+      { name: "HET_Fan_ID", kpd: 1.0, role: "Активный игрок", img: "images/player24.jpg", medals: [] },
+      { name: "H06bIT", kpd: 1.0, role: "Активный игрок", img: "images/player25.jpg", medals: [] },
+      { name: "Lel_Xolod98", kpd: 1.0, role: "Активный игрок", img: "images/player26.jpg", medals: [] },
+      { name: "P03K0m_HaDz0P", kpd: 1.8, role: "Активный игрок", img: "images/player27.jpg", medals: [] },
+      { name: "RUSSIAN_OKUPANTO", kpd: 1.0, role: "Активный игрок", img: "images/player28.jpg", medals: [] },
+      { name: "Ta_samaya_uchilka", kpd: 1.0, role: "Активный игрок", img: "images/player29.jpg", medals: [] },
+      { name: "X_o.3.j.A.LH", kpd: 1.0, role: "Активный игрок", img: "images/player30.jpg", medals: [] },
+      { name: "_RabIs_", kpd: 1.0, role: "Активный игрок", img: "images/player31.jpg", medals: [] },
+      { name: "_STALNOI_SOKOL_", kpd: 1.0, role: "Активный игрок", img: "images/player32.jpg", medals: [] },
+      { name: "AAA0101", kpd: 1.0, role: "Активный игрок", img: "images/player33.jpg", medals: [] },
+      { name: "CAHbl4_34", kpd: 1.0, role: "Активный игрок", img: "images/player34.jpg", medals: [] },
+      { name: "Cme6acJlo", kpd: 1.0, role: "Активный игрок", img: "images/player35.jpg", medals: [] },
+      { name: "s3ga_panzer", kpd: 5.6, role: "Активный игрок", img: "images/player35.jpg", medals: [] },
+      { name: "druidv", kpd: 1.0, role: "Активный игрок", img: "images/player36.jpg", medals: [] },
+      { name: "eXSoldier", kpd: 1.0, role: "Активный игрок", img: "images/player37.jpg", medals: [] },
+      { name: "Lexa_23rus_1", kpd: 1.0, role: "Активный игрок", img: "images/player38.jpg", medals: [] },
+      { name: "mat2777", kpd: 2.4, role: "Активный игрок", img: "images/player39.jpg", medals: [] },
+      { name: "NikerTp", kpd: 1.0, role: "Активный игрок", img: "images/player40.jpg", medals: [] },
+      { name: "Zarecevagor", kpd: 1.0, role: "Активный игрок", img: "images/player41.jpg", medals: [] },
+      { name: "MPA4HblU_PACUDOK", kpd: 1.0, role: "Активный игрок", img: "images/player42.jpg", medals: [] },
+      { name: "BUGMaFia7", kpd: 3.5, role: "Активный игрок", img: "images/player44.jpg", medals: [] },
+      // === НОВЫЕ ИГРОКИ (добавлены из скриншотов, KPD = 1.0, старые не тронуты) ===
+      { name: "6aJJaMyT_", kpd: 1.0, role: "Активный игрок", img: "images/player_new.jpg", medals: [] },
+      { name: "_СуРок_", kpd: 1.0, role: "Активный игрок", img: "images/player_new.jpg", medals: [] },
+      { name: "esha345", kpd: 1.0, role: "Активный игрок", img: "images/player_new.jpg", medals: [] },
+      { name: "HET_ALKOGOLIZMy", kpd: 1.0, role: "Активный игрок", img: "images/player_new.jpg", medals: [] },
+      { name: "HET_HacTPoeHu9l", kpd: 1.0, role: "Активный игрок", img: "images/player_new.jpg", medals: [] },
+      { name: "npocBugg", kpd: 1.0, role: "Активный игрок", img: "images/player_new.jpg", medals: [] },
+      { name: "___OKAMI___", kpd: 1.0, role: "Активный игрок", img: "images/player_new.jpg", medals: [] },
+      { name: "_Greshnik_034rus", kpd: 1.0, role: "Активный игрок", img: "images/player_new.jpg", medals: [] },
+      { name: "174gogi174", kpd: 1.0, role: "Активный игрок", img: "images/player_new.jpg", medals: [] },
+      { name: "3A_PAHEE_TTP0", kpd: 1.0, role: "Активный игрок", img: "images/player_new.jpg", medals: [] },
+      { name: "ncux_U", kpd: 1.0, role: "Активный игрок", img: "images/player_new.jpg", medals: [] },
+      { name: "tenesis1s", kpd: 1.0, role: "Активный игрок", img: "images/player_new.jpg", medals: [] },
+      { name: "agustanLP", kpd: 1.0, role: "Активный игрок", img: "images/player_new.jpg", medals: [] }
+    ];
+
+    // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
+    function getKpdColor(kpd) {
+      if (kpd >= 10) return "#c026d3";
+      if (kpd >= 7) return "#00ff88";
+      if (kpd >= 4) return "#ffd700";
+      return "#ff4444";
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast ${type}`;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3200);
+    }
+
+    function launchConfetti() {
+      const colors = ['#00ff88', '#ffd700', '#00ccff'];
+      for (let i = 0; i < 80; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'fixed';
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.top = '-20px';
+        particle.style.width = '8px';
+        particle.style.height = '8px';
+        particle.style.background = colors[Math.floor(Math.random()*colors.length)];
+        particle.style.borderRadius = '50%';
+        particle.style.zIndex = '9999';
+        particle.style.pointerEvents = 'none';
+        document.body.appendChild(particle);
+
+        const duration = Math.random() * 2500 + 1800;
+        const angle = Math.random() * 80 + 50;
+        
+        particle.animate([
+          { transform: `translateY(0) rotate(0deg)`, opacity: 1 },
+          { transform: `translateY(${window.innerHeight + 100}px) rotate(${angle * 3}deg)`, opacity: 0 }
+        ], {
+          duration: duration,
+          easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'
+        }).onfinish = () => particle.remove();
+      }
+    }
+
+    // ==================== ХРАНЕНИЕ ====================
+    function loadFromStorage() {
+      clanAccounts = JSON.parse(localStorage.getItem('clanAccounts') || '{}');
+      avatars = JSON.parse(localStorage.getItem('clanAvatars') || '{}');
+      
+      const savedUser = localStorage.getItem('currentClanUser');
+      if (savedUser) {
+        const parsed = JSON.parse(savedUser);
+        if (members.some(m => m.name === parsed.name)) {
+          currentUser = parsed;
+        } else {
+          localStorage.removeItem('currentClanUser');
+        }
+      }
+    }
+
+    function saveToStorage() {
+      localStorage.setItem('clanAccounts', JSON.stringify(clanAccounts));
+      localStorage.setItem('clanAvatars', JSON.stringify(avatars));
+      if (currentUser) {
+        localStorage.setItem('currentClanUser', JSON.stringify(currentUser));
+      } else {
+        localStorage.removeItem('currentClanUser');
+      }
+    }
+
+    function getAvatar(name) {
+      return avatars[name] || null;
+    }
+
+    // ==================== РЕГИСТРАЦИЯ / КАБИНЕТ ====================
+    function populateDatalist() {
+      const datalist = document.getElementById('clanMembersList');
+      if (!datalist) return;
+      datalist.innerHTML = '';
+      members.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.name;
+        datalist.appendChild(opt);
+      });
+    }
+
+    function checkNicknameExists(nickname) {
+      return members.some(m => m.name.toLowerCase() === nickname.toLowerCase());
+    }
+
+    function getPlayerByName(nickname) {
+      return members.find(m => m.name.toLowerCase() === nickname.toLowerCase());
+    }
+
+    function updateNicknameStatus(input, statusDiv) {
+      const val = input.value.trim();
+      if (!val) {
+        statusDiv.innerHTML = '';
+        return;
+      }
+      if (checkNicknameExists(val)) {
+        statusDiv.innerHTML = '<span style="color:#00ff88;">✓ Игрок найден в составе клана</span>';
+        input.style.borderColor = '#00ff88';
+      } else {
+        statusDiv.innerHTML = '<span style="color:#ff4444;">✗ Игрока с таким ником нет в списке состава</span>';
+        input.style.borderColor = '#ff4444';
+      }
+    }
+
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const nickInput = document.getElementById('regNickname');
+      const passInput = document.getElementById('regPassword');
+      const statusDiv = document.getElementById('nicknameStatus');
+
+      const nickname = nickInput.value.trim();
+      const password = passInput.value.trim();
+
+      if (!nickname || !password) {
+        showToast('Введите ник и пароль', 'error');
+        return;
+      }
+
+      const player = getPlayerByName(nickname);
+      if (!player) {
+        statusDiv.innerHTML = '<span style="color:#ff4444;">✗ Игрока с таким ником нет в списке состава клана</span>';
+        showToast('Нет такого бойца в составе. Обратитесь к лидеру.', 'error');
+        return;
+      }
+
+      const lowerName = player.name;
+
+      if (clanAccounts[lowerName]) {
+        if (clanAccounts[lowerName].password === password) {
+          currentUser = { name: lowerName, kpd: player.kpd, role: player.role };
+          saveToStorage();
+          launchConfetti();
+          showToast(`Добро пожаловать обратно, ${lowerName}!`, 'success');
+          renderCabinet();
+        } else {
+          showToast('Неверный пароль', 'error');
+        }
+      } else {
+        clanAccounts[lowerName] = {
+          password: password,
+          registeredAt: new Date().toISOString()
+        };
+        currentUser = { name: lowerName, kpd: player.kpd, role: player.role };
+        saveToStorage();
+        launchConfetti();
+        showToast(`Аккаунт успешно создан! Добро пожаловать в клан, ${lowerName}!`, 'success');
+        renderCabinet();
+      }
+    }
+
+    function handleAvatarUpload(event) {
+      const file = event.target.files[0];
+      if (!file || !currentUser) return;
+
+      if (!file.type.startsWith('image/')) {
+        showToast('Пожалуйста, выберите изображение', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64 = e.target.result;
+        
+        // Сохраняем аватар
+        avatars[currentUser.name] = base64;
+        saveToStorage();
+        
+        // Обновляем интерфейс
+        renderCabinet();
+        filterAndSort(); // обновляем карточки
+        
+        showToast('Аватарка успешно сохранена! Теперь все видят твою аватарку.', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeAvatar() {
+      if (!currentUser) return;
+      if (confirm('Удалить свою аватарку?')) {
+        delete avatars[currentUser.name];
+        saveToStorage();
+        renderCabinet();
+        filterAndSort();
+        showToast('Аватарка удалена', 'success');
+      }
+    }
+
+    function renderCabinet() {
+      const container = document.getElementById('cabinetContent');
+      if (!container) return;
+
+      // === ДОБАВЛЕНО: БАННЕР О БЛОКИРОВКЕ IP ===
+      const ipBlockBanner = `
+        <div style="background: linear-gradient(90deg, #aa0000, #ff2222); color: white; padding: 22px 28px; border-radius: 16px; margin-bottom: 25px; text-align: center; border: 4px solid #ffcc00; box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);">
+          <div style="font-size: 1.65rem; font-weight: 900; margin-bottom: 8px; text-shadow: 0 0 15px #000;">
+            ⚠️ ВАШ IP АДРЕС ЗАБЛОКИРОВАН ⚠️
+          </div>
+          <div style="font-size: 1.25rem; font-weight: 700; margin-bottom: 6px;">
+            Тех-Админ заблокировал ваш IP адрес для решения проблемы
+          </div>
+          <div style="font-size: 1.05rem; opacity: 0.95;">
+            Обратитесь к Тех-Админу для разблокировки.<br>
+            Без разблокировки доступ к полному функционалу Кабинета ограничен.
+            Разблокировка не возможна.
+          </div>
+        </div>
+      `;
+
+      if (!currentUser) {
+        container.innerHTML = ipBlockBanner + `
+          <div class="glass" style="padding:2.8rem; border-radius:22px; border:3px solid var(--primary); max-width:480px; margin:0 auto;">
+            <h3 style="text-align:center; color:var(--primary); margin-bottom:1.4rem;">Вход / Регистрация в Кабинет</h3>
+            <p style="text-align:center; color:#aaa; margin-bottom:1.8rem; font-size:0.95rem;">
+              Доступно <strong>только</strong> бойцам из официального состава клана
+            </p>
+            
+            <form id="authForm" class="auth-form">
+              <input type="text" id="regNickname" class="auth-input" placeholder="Ваш никнейм из состава" list="clanMembersList" required>
+              <datalist id="clanMembersList"></datalist>
+              <div id="nicknameStatus" class="nickname-status"></div>
+
+              <div style="position:relative; margin-bottom:18px;">
+                <input type="password" id="regPassword" class="auth-input" placeholder="Придумайте или введите пароль" required style="padding-right:48px;">
+                <button type="button" onclick="togglePasswordVisibility('regPassword', this)" 
+                        style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:#888; font-size:1.3rem; cursor:pointer;">👁️</button>
+              </div>
+
+              <button type="submit" class="auth-btn">Войти или Зарегистрироваться</button>
+            </form>
+
+            <p style="text-align:center; margin-top:1.6rem; font-size:0.85rem; color:#666;">
+              Если тебя нет в списке — напиши лидеру evgecshok в Discord / TS
+            </p>
+          </div>
+        `;
+
+        setTimeout(() => {
+          const nickInput = document.getElementById('regNickname');
+          const statusDiv = document.getElementById('nicknameStatus');
+          if (nickInput && statusDiv) {
+            nickInput.addEventListener('input', () => updateNicknameStatus(nickInput, statusDiv));
+            populateDatalist();
+          }
+          const form = document.getElementById('authForm');
+          if (form) form.addEventListener('submit', handleAuthSubmit);
+        }, 50);
+
+      } else {
+        const player = getPlayerByName(currentUser.name) || currentUser;
+        const currentAvatar = getAvatar(currentUser.name);
+
+        let avatarHTML = '';
+        if (currentAvatar) {
+          avatarHTML = `
+            <div style="text-align:center; margin-bottom:1.5rem;">
+              <img src="${currentAvatar}" class="avatar-preview" alt="Твоя аватарка">
+              <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                <label style="background:#00ff88; color:black; padding:10px 24px; border-radius:10px; cursor:pointer; font-weight:700; display:inline-block;">
+                  Сменить аватарку
+                  <input type="file" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
+                </label>
+                <button onclick="removeAvatar()" style="background:#3a1a1a; border:2px solid #ff4444; color:#ff4444; padding:10px 24px; border-radius:10px; cursor:pointer; font-weight:700;">Удалить</button>
+              </div>
+            </div>
+          `;
+        } else {
+          avatarHTML = `
+            <div style="text-align:center; margin-bottom:1.5rem;">
+              <div class="avatar-placeholder">Нет аватарки</div>
+              <label style="background:#00ff88; color:black; padding:12px 32px; border-radius:12px; cursor:pointer; font-weight:700; display:inline-block; box-shadow:0 0 20px rgba(0,255,136,0.4);">
+                Загрузить свою аватарку
+                <input type="file" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
+              </label>
+              <p style="color:#888; font-size:0.85rem; margin-top:10px;">Аватарка будет видна всем в составе клана</p>
+            </div>
+          `;
+        }
+
+        container.innerHTML = ipBlockBanner + `
+          <div style="text-align:center; margin-bottom:2rem;">
+            <h2 style="color:var(--primary);">${currentUser.name}</h2>
+            <p style="color:#aaa;">${currentUser.role}</p>
+          </div>
+
+          ${avatarHTML}
+
+          <div style="display:flex; justify-content:center; margin:2rem 0;">
+            <div class="kpd-circle">
+              <svg width="132" height="132">
+                <circle class="background" cx="66" cy="66" r="52"></circle>
+                <circle class="progress" cx="66" cy="66" r="52" stroke="${getKpdColor(player.kpd)}" 
+                        style="--final-offset: ${385 - (player.kpd / 10) * 385}; stroke-dashoffset: ${385 - (player.kpd / 10) * 385};"></circle>
+              </svg>
+              <div class="kpd-text">${player.kpd}<span style="font-size:1rem; opacity:0.7;">/10</span></div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:1rem; max-width:620px; margin:0 auto 2rem;">
+            <div class="profile-stat glass">
+              <div style="color:#888; font-size:0.9rem;">Твои бои</div>
+              <div style="font-size:2.1rem; font-weight:700; color:#00ff88;">—</div>
+            </div>
+            <div class="profile-stat glass">
+              <div style="color:#888; font-size:0.9rem;">Винрейт</div>
+              <div style="font-size:2.1rem; font-weight:700; color:#ffd700;">—</div>
+            </div>
+            <div class="profile-stat glass">
+              <div style="color:#888; font-size:0.9rem;">Средний урон</div>
+              <div style="font-size:2.1rem; font-weight:700; color:#00ccff;">—</div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:1.5rem;">
+            <button onclick="openPlayerModal(getPlayerByName('${currentUser.name}'))" 
+                    style="padding:14px 32px; background:#111; border:2px solid var(--primary); color:var(--primary); border-radius:12px; font-weight:700; cursor:pointer;">
+              Открыть полный профиль
+            </button>
+            <button onclick="logoutUser()" 
+                    style="padding:14px 32px; background:#3a1a1a; border:2px solid #ff4444; color:#ff4444; border-radius:12px; font-weight:700; cursor:pointer;">
+              Выйти из аккаунта
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    function logoutUser() {
+      currentUser = null;
+      localStorage.removeItem('currentClanUser');
+      renderCabinet();
+      showToast('Вы вышли из аккаунта', 'success');
+    }
+
+    // ==================== RENDER MEMBERS ====================
+    function renderMembers(filteredMembers) {
+      currentFilteredMembers = filteredMembers;
+      const container = document.getElementById('membersCards');
+      container.innerHTML = '';
+
+      filteredMembers.forEach((m, index) => {
+        const offset = 385 - (m.kpd / 10) * 385;
+        const color = getKpdColor(m.kpd);
+        const customAvatar = getAvatar(m.name);
+        const imgSrc = customAvatar || m.img;
+        
+        let medalsHTML = '';
+        if (m.medals && m.medals.length > 0) {
+          const valid = m.medals.filter(medal => medal && medal.name);
+          if (valid.length > 0) {
+            medalsHTML = `<div class="medals-container">` + valid.map(medal => `
+              <div class="medal ${medal.rarity}">
+                ${medal.icon || ''}
+                <div class="tooltip"><strong>${medal.name}</strong><br>${medal.desc || ''}</div>
+              </div>`).join('') + `</div>`;
+          }
+        }
+
+        const card = document.createElement('div');
+        card.className = 'card glass';
+        card.style.animationDelay = `${index * 55}ms`;
+        card.innerHTML = `
+          <img src="${imgSrc}" alt="${m.name}" onerror="this.src='https://via.placeholder.com/300x185/111827/00ff88?text=${m.name}'">
+          <div class="card-body">
+            <h3 style="display:flex; align-items:center; justify-content:center; gap:6px;">
+              ${m.name}
+            </h3>
+            <p style="color:#aaa; margin:8px 0;">${m.role}</p>
+            ${medalsHTML}
+            <div class="kpd-circle">
+              <svg width="132" height="132">
+                <circle class="background" cx="66" cy="66" r="52"></circle>
+                <circle class="progress" cx="66" cy="66" r="52" stroke="${color}" style="--final-offset: ${offset};"></circle>
+              </svg>
+              <div class="kpd-text">${m.kpd}<span class="kpd-max">/10</span></div>
+            </div>
+            <div class="kpd-label">Коэффициент Полезности</div>
+          </div>
+        `;
+        card.addEventListener('click', () => openPlayerModal(m));
+        container.appendChild(card);
+      });
+    }
+
+    function filterAndSort() {
+      let filtered = [...members];
+      const term = document.getElementById('searchInput').value.toLowerCase().trim();
+      if (term) filtered = filtered.filter(m => m.name.toLowerCase().includes(term));
+
+      const sort = document.getElementById('sortSelect').value;
+      if (sort === 'name-asc') filtered.sort((a,b) => a.name.localeCompare(b.name));
+      if (sort === 'name-desc') filtered.sort((a,b) => b.name.localeCompare(a.name));
+      if (sort === 'kpd-desc') filtered.sort((a,b) => b.kpd - a.kpd);
+      if (sort === 'kpd-asc') filtered.sort((a,b) => a.kpd - b.kpd);
+
+      renderMembers(filtered);
+    }
+
+    // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+    function initTabs() {
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const targetTab = tab.dataset.tab;
+          loader.style.display = 'flex';
+          setTimeout(() => {
+            loader.style.display = 'none';
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+            const content = document.getElementById(targetTab);
+            content.classList.add('active');
+
+            if (targetTab === 'stats') {
+              setTimeout(animateStatCounters, 400);
+            }
+            if (targetTab === 'cabinet') {
+              renderCabinet();
+            }
+            if (targetTab === 'members') {
+              filterAndSort();
+            }
+          }, 1800);
+        });
+      });
+    }
+
+    function initFilters() {
+      const search = document.getElementById('searchInput');
+      const sort = document.getElementById('sortSelect');
+
+      if (search) search.addEventListener('input', filterAndSort);
+      if (sort) sort.addEventListener('change', filterAndSort);
+    }
+
+    function initEverything() {
+      loadFromStorage();
+      initTabs();
+      initFilters();
+
+      renderMembers(members);
+
+      startCountdown();
+      
+      console.log('%c[KIL_6] Сайт 2.0 загружен с аватарками игроков', 'color:#00ff88');
+    }
+
+    // ==================== МОДАЛ ИГРОКА ====================
+    function openPlayerModal(player) {
+      const modal = document.getElementById('playerModal');
+      const header = document.getElementById('modalHeader');
+      const body = document.getElementById('modalBody');
+
+      const isMe = currentUser && currentUser.name === player.name;
+      const customAvatar = getAvatar(player.name);
+      const avatarSrc = customAvatar || player.img;
+
+      header.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+          <img src="${avatarSrc}" style="width:110px; height:110px; border-radius:50%; border:4px solid var(--primary); object-fit:cover; box-shadow:0 0 25px rgba(0,255,136,0.4);" 
+               onerror="this.src='https://via.placeholder.com/110/111827/00ff88?text=${player.name}'">
+          <div>
+            <h2 style="color:var(--primary); margin:0;">${player.name} ${isMe ? '<span style="font-size:0.7rem; background:#00ff88; color:black; padding:2px 8px; border-radius:6px;">ЭТО ВЫ</span>' : ''}</h2>
+            <p style="color:#aaa; margin:8px 0 0;">${player.role}</p>
+          </div>
+        </div>
+      `;
+
+      let medalsHTML = '';
+      if (player.medals && player.medals.length > 0) {
+        medalsHTML = player.medals.map(m => `
+          <div style="display:flex; align-items:center; gap:12px; background:#1a1a1f; padding:12px 16px; border-radius:12px; margin-bottom:10px;">
+            <div style="width:42px; height:42px; border-radius:50%; border:2.5px solid ${m.rarity === 'legendary' ? '#ffd700' : m.rarity === 'rare' ? '#00ccff' : '#ff4444'}; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">
+              ${m.icon || ''}
+            </div>
+            <div>
+              <div style="font-weight:700; color:#fff;">${m.name}</div>
+              <div style="font-size:0.9rem; color:#aaa;">${m.desc || ''}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      body.innerHTML = `
+        <div style="display:flex; justify-content:center; margin:1.2rem 0 1.8rem;">
+          <div class="kpd-circle">
+            <svg width="132" height="132">
+              <circle class="background" cx="66" cy="66" r="52"></circle>
+              <circle class="progress" cx="66" cy="66" r="52" stroke="${getKpdColor(player.kpd)}" 
+                      style="--final-offset: ${385 - (player.kpd / 10) * 385}; stroke-dashoffset: ${385 - (player.kpd / 10) * 385};"></circle>
+            </svg>
+            <div class="kpd-text">${player.kpd}<span style="font-size:1rem; opacity:0.7;">/10</span></div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap:1rem; margin-bottom:1.8rem;">
+          <div style="background:#111; padding:14px; border-radius:12px; text-align:center;">
+            <div style="color:#888; font-size:0.85rem;">Бои</div>
+            <div style="font-size:1.85rem; font-weight:700; color:#00ff88;">—</div>
+          </div>
+          <div style="background:#111; padding:14px; border-radius:12px; text-align:center;">
+            <div style="color:#888; font-size:0.85rem;">Винрейт</div>
+            <div style="font-size:1.85rem; font-weight:700; color:#ffd700;">—</div>
+          </div>
+          <div style="background:#111; padding:14px; border-radius:12px; text-align:center;">
+            <div style="color:#888; font-size:0.85rem;">Урон</div>
+            <div style="font-size:1.85rem; font-weight:700; color:#00ccff;">—</div>
+          </div>
+        </div>
+
+        ${medalsHTML ? `<div style="margin-top:1.2rem;"><h4 style="margin-bottom:0.8rem; color:#00ff88;">Медали и достижения</h4>${medalsHTML}</div>` : ''}
+      `;
+
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('playerModal').style.display = 'none';
+    }
+
+    function openCompareModal() {
+      const modal = document.getElementById('compareModal');
+      const select1 = document.getElementById('player1Select');
+      const select2 = document.getElementById('player2Select');
+
+      select1.innerHTML = '';
+      select2.innerHTML = '';
+
+      members.forEach(m => {
+        const opt1 = document.createElement('option');
+        opt1.value = m.name;
+        opt1.textContent = `${m.name} (${m.kpd})`;
+        select1.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = m.name;
+        opt2.textContent = `${m.name} (${m.kpd})`;
+        select2.appendChild(opt2);
+      });
+
+      document.getElementById('compareResult').style.display = 'none';
+      modal.style.display = 'flex';
+    }
+
+    function closeCompareModal() {
+      document.getElementById('compareModal').style.display = 'none';
+    }
+
+    function comparePlayers() {
+      const name1 = document.getElementById('player1Select').value;
+      const name2 = document.getElementById('player2Select').value;
+
+      if (name1 === name2) {
+        showToast('Выберите двух разных игроков', 'error');
+        return;
+      }
+
+      const p1 = members.find(m => m.name === name1);
+      const p2 = members.find(m => m.name === name2);
+
+      const container = document.getElementById('compareContainer');
+      const resultDiv = document.getElementById('compareResult');
+
+      const winner = p1.kpd > p2.kpd ? p1 : p2;
+      const loser = p1.kpd > p2.kpd ? p2 : p1;
+
+      container.innerHTML = `
+        <div class="compare-player-card ${winner === p1 ? 'winner' : ''}">
+          <div class="compare-player-name">${p1.name}</div>
+          <div class="compare-label">КПД</div>
+          <div class="compare-kpd" style="color:${getKpdColor(p1.kpd)}">${p1.kpd}</div>
+          <div class="compare-role">${p1.role}</div>
+        </div>
+        <div class="compare-player-card ${winner === p2 ? 'winner' : ''}">
+          <div class="compare-player-name">${p2.name}</div>
+          <div class="compare-label">КПД</div>
+          <div class="compare-kpd" style="color:${getKpdColor(p2.kpd)}">${p2.kpd}</div>
+          <div class="compare-role">${p2.role}</div>
+        </div>
+      `;
+
+      resultDiv.style.display = 'block';
+
+      setTimeout(() => {
+        showToast(`${winner.name} победил в сравнении!`, 'success');
+      }, 600);
+    }
+
+    function animateStatCounters() {
+      document.querySelectorAll('.stat-number').forEach(el => {
+        const target = parseInt(el.dataset.target);
+        let current = 0;
+        const increment = Math.ceil(target / 60);
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            current = target;
+            clearInterval(timer);
+          }
+          el.textContent = current.toLocaleString();
+        }, 30);
+      });
+    }
+
+    function startCountdown() {
+      const countdownEl = document.getElementById('countdown');
+      if (!countdownEl) return;
+
+      const now = new Date();
+      const endOfWeek = new Date(now);
+      endOfWeek.setDate(now.getDate() + (7 - now.getDay()));
+      endOfWeek.setHours(23, 59, 59, 0);
+
+      function update() {
+        const diff = endOfWeek - new Date();
+        if (diff <= 0) {
+          countdownEl.textContent = 'НЕДЕЛЯ ЗАВЕРШЕНА';
+          return;
+        }
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        countdownEl.textContent = `${days}д ${hours}ч ${minutes}м`;
+      }
+
+      update();
+      setInterval(update, 60000);
+    }
+
+    // Запуск
+    document.addEventListener('DOMContentLoaded', initEverything);
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js"></script>
+</body>
+</html>

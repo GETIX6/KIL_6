@@ -1,0 +1,14 @@
+    .stats-map {
+      width: auto;
+      max-width: 100%;
+      height: auto;
+      margin: 2rem auto;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+      border: 2px solid var(--primary);
+      display: block;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+      image-rendering: pixelated; /* на крайний случай */
+    }
